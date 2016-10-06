@@ -1,0 +1,31 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Item ID</th>
+        <th>Category</th>
+        <th>Advert</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Shipping from</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in advertises">
+        <td> {{item.item_id}}
+        </td>
+        <td> {{item.category}}
+        </td>
+        <td> {{item.text}}
+        </td>
+        <td> {{item.qty}}
+        </td>
+        <td> {{item.price}}
+        </td>
+        <td> {{item.shipping}}
+        </td>
+        <td> <input type="button" value="Add to Cart" class="btn btn-primary" ng-click="addToCart(item.item_id);">
+        </td>
+    </tr>
+    </tbody>
+</table>
+

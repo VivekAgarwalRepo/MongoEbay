@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+	<script src="angular/DashboarControls.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
+
+
+</head>
+<body ng-app="placeadd" ng-controller="advertisement">
+<h1>Welcome <%= tagline %> </h1>
+<a href="/logout">logout</a>
+
+
+<p> Place an add </p>
+
+<form name="ad-form"  ng-submit="placeAdd();">
+
+category : <select ng-model="category" class="form-control" id="cat">
+			        <option >Electronics</option>
+			        <option>Cosmetics</option>
+			        <option>Home Decor</option>
+			        <option>Nutrition</option>
+		   </select>
+			<br>
+advert text : <input type="text" ng-model="adtext">
+<br>
+
+Qty : <input type="number" ng-model="adqty">
+<br>
+
+Price : <input type = "number" ng-model="adprice">
+<br>
+
+Shipping From : <input type="text" ng-model="adship">
+    <br>
+<button type="submit" > Place Order </button>
+
+</form>
+<br><br>
+<a href="#/showAdvert">Show all adverts</a>
+<div ng-controller="displayController" data-ng-view>
+
+</div>
+
+</body>
+</html>

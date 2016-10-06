@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<meta charset="ISO-8859-1">
+<title>Ebay hai laude</title>
+
+<style>
+.bordered{
+width:100%;
+margin:auto;
+background:none repeat scroll 0 0 #fff;
+border:1px solid #ccc;
+border-radius:3px
+}
+.spr {
+    display: block;
+    background-image: url(https://securepics.ebaystatic.com/aw/pics/register/sprSignIn3.png)!important;
+}
+.ar {
+    background-position: 0 -75px;
+}
+.sp {
+    display: inline-block!important;
+    background-repeat: no-repeat;
+    width: 30px;
+    position: relative;
+    height: 30px;
+    left: 9%;
+    bottom: -11px;
+}
+
+.pl {
+    background-position: -95px -76px;
+}
+
+a{
+
+	width:150%;
+	font-size:16px;
+}
+
+
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+<script src="angular/signInValidation.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
+
+
+</head>
+
+<body style="background-color:#f1f1f1" ng-app="myapp">
+
+<div class="container-fluid" style="margin-top:2cm;">
+	<div class="row">
+		<div class="col-md-13">
+		<img role="Logo" width="250" height="200" style="margin-top:33px; clip:rect(47px, 118px, 95px, 0px); position:absolute; top:-47px; left:615.6px;" src="ebay logo.png">		
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-offset-4 col-xs-4 bordered"  style="margin-top:33px;">
+			<ul class="nav nav-tabs">
+   			 <li class="active"><a href="#signin-tab" data-toggle="tab"><strong><span class="sp spr ar"></span>&nbsp;&nbsp;&nbsp;&nbsp;Sign in</strong></a></li>
+   			 <li><a href="#register-tab" data-toggle="tab"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="sp spr pl"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Register</strong> </a></li>
+			</ul>
+			<br>
+			    <div class="tab-content">
+			        <div class="tab-pane active" id="signin-tab" ng-controller="control">
+					<form name="signInForm" ng-submit="login(signInForm.$valid);"> 
+						<div class="row" ng-hide="valid">
+							<p style="color:red; font-size:12px"> &nbsp;&nbsp; &nbsp;&nbsp;Oops, that's not a match.</p>
+						</div>			           	
+
+			           	<div class="row">
+			           		<div class="col-xs-12">
+			                    <input type="text" class="form-control" placeholder="Email or username" name="Name" ng-model="username" required/>
+			                </div>
+			           	</div>
+			               
+			            <br>
+						<div class="row">
+			           		<div class="col-xs-12">
+			                    <input type="password" class="form-control" placeholder="Password" name="pass" ng-model="password" required/>
+			                </div>
+			           	</div>
+			            <br>
+			            <div class="row">
+				            <div class="col-xs-12">
+				            	<button type="submit" class="btn btn-primary btn-block"><strong>Sign In</strong></button>
+				        	</div>
+				        </div>
+				        <br>
+				  	</form>
+			        </div>
+			
+			        <div class="tab-pane" id="register-tab" ng-controller="regValidation">
+			         <form name="userForm" ng-submit="register(userForm.$valid);"> 
+			            <div class="row">
+			           		<div class="col-xs-12">
+			                    <input type="email" class="form-control" placeholder="Email" ng-model="email" name="email" required />
+			                	 <p style="color:red" ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Please enter a valid email address.</p>
+			                	 <div ng-hide="present"><p style="color:red"> This Email ID already exists!</p><p style="color:red; font-style:italic; text-decoration: underline;"> Forgot password? </p></div>
+			                	 <div ng-hide="inserterr"><p style="color:red"> Oops! Looks like we are experiencing issues. We Will be back soon!</p></div>
+			                </div>
+			                
+			           	</div>
+			               
+			            <br>
+						<div class="row">
+			           		<div class="col-xs-12">
+			                    <input type="email2" class="form-control" ng-model="email2" placeholder="Reenter Email" name="email2" required/>
+			                	<p style="color:red" ng-show="userForm.email2.$invalid && !userForm.email2.$pristine " class="help-block">Please ensure the email address match and are valid.</p>
+			                	<div ng-hide="mismatch" ><p style="color:red">The emails do not match!</p></div>
+			                </div>
+			           	</div>
+			           	<br>
+						
+						<div class="row">
+			           		<div class="col-xs-12">
+			                    <input type="password" ng-required="required"  ng-model="password" class="form-control" placeholder="Password" oncopy="return false" size="32" name="PasswordSignup" required/>
+			                </div>
+			           	</div>
+			           	<br>
+						<div class="row">
+			           		<div class="col-xs-6">
+			                    <input type="text" class="form-control" placeholder="First Name" ng-model="newfname" name="FirstNameSignup" required/>
+			                	<p ng-show="userForm.name.$invalid && !userForm.name.$pristine" class="help-block">Your name is required.</p>
+			                </div>
+			                <div class="col-xs-6">
+			                    <input type="text" class="form-control" placeholder="Last Name" ng-model="newlname" name="LastNameSignup" required/>
+			                </div>
+			           	</div>
+			           	<br>
+			           	<div class="row">
+				           	<div class="col-xs-12">
+				            	<button type="submit" class="btn btn-primary btn-block" ><strong>Register</strong></button>
+				        	</div>
+			        	</div>
+			           	<br>
+			           	</form>
+			        </div>
+			    </div>
+			
+			    
+		
+		</div>
+		
+	</div>
+
+</div>
+
+</body>
+</html>	
