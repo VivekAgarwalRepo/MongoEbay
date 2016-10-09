@@ -2,6 +2,8 @@
  * New node file
  */
 
+var cartids=[];
+
 exports.dashboard=function(req,res){
 	//console.log("Result is : "+req.param("result"));
 	console.log("Recvd id:"+req.param("id"));

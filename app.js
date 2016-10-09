@@ -12,7 +12,8 @@ var express = require('express')
   , validation=require('./routes/valid')
   , welcome=require('./routes/welcome')
   , homepage=require('./routes/dashboards')
-    , advert=require('./routes/advert') ;
+    , advert=require('./routes/advert')
+    , cartHandle=require('./routes/cart');
 
 var app = express();
 var session=require("express-session");
@@ -47,7 +48,8 @@ app.get('/home',homepage.dashboard);
 app.get('/logout',homepage.logout);
 app.post('/newAdvert',advert.add);
 app.post('/showAdvert',advert.show);
-
+app.post('/cart',cartHandle.addtocart);
+app.post('/showCart',cartHandle.displayCart);
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

@@ -23,14 +23,16 @@
 
 
 </head>
-<body ng-app="placeadd" ng-controller="advertisement">
+
+<body ng-app="placeadd"  >
+<div ui-view>
+
 <h1>Welcome <%= tagline %> </h1>
 <a href="/logout">logout</a>
 
-
 <p> Place an add </p>
 
-<form name="ad-form"  ng-submit="placeAdd();">
+<form name="ad-form" ng-controller="advertisement" ng-submit="placeAdd();">
 
 category : <select ng-model="category" class="form-control" id="cat">
 			        <option >Electronics</option>
@@ -53,11 +55,18 @@ Shipping From : <input type="text" ng-model="adship">
 <button type="submit" > Place Order </button>
 
 </form>
-<br><br>
+<br>
+
 <a href="#/showAdvert">Show all adverts</a>
-<div ng-controller="displayController" data-ng-view>
+<br><br>
+
+<br>
+<a ui-sref="cart" class="btn btn-primary">Show the Cart</a>
+<div ng-controller="addToCartController" data-ng-view>
 
 </div>
 
+
+</div>
 </body>
 </html>

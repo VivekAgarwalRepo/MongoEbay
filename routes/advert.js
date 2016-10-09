@@ -21,10 +21,10 @@ connection.connect(function(err) {
 
 exports.add=function(req,res){
 
-    // console.log(req.param("text"));
-    // console.log(req.param("quant"));
-    // console.log(req.param("price"));
-    // console.log(req.param("ship"));
+    console.log(req.param("text"));
+    console.log(req.param("quant"));
+    console.log(req.param("price"));
+    console.log(req.param("ship"));
     if(req.session.username==undefined){
         res.send("invalid-session");
     }
@@ -39,7 +39,10 @@ exports.add=function(req,res){
                 if (rows != "") {
                     item_id = rows[0].item_id * 1 + 1;
                     console.log("Current item_id :" + item_id);
-                    connection.query('insert into adverts(acc_id,item_id,category,text,qty,price,shipping) values (?,?,?,?,?,?,?);', [req.session.acc_id, item_id, req.param("category"), req.param("text"), req.param("quant"), req.param("price"), req.param("ship")], function (err, rows, fields) {
+                    console.log("TypeOf price :"+typeof req.param("price"));
+                    console.log("TypeOf quant :"+typeof req.param("quant"));
+
+                    connection.query('insert into adverts(acc_id,item_id,category,text,qty,price,shipping,unit_price) values (?,?,?,?,?,?,?,?);', [req.session.acc_id, item_id, req.param("category"), req.param("text"), req.param("quant"), req.param("price"), req.param("ship"),Math.round((req.param("price")*1/req.param("quant")*1)*100)/100], function (err, rows, fields) {
                         if (!err) {
                             console.log("Advert Placed!");
                             res.send({"result": "success", "item_id": item_id});
@@ -55,7 +58,7 @@ exports.add=function(req,res){
                     var item_id = 87654321;
                     console.log("Created id for first item in database :" + item_id);
                     console.log("Current item_id :" + item_id);
-                    connection.query('insert into adverts(acc_id,item_id,category,text,qty,price,shipping) values (?,?,?,?,?,?,?);', [req.session.acc_id, item_id, req.param("category"), req.param("text"), req.param("quant"), req.param("price"), req.param("ship")], function (err, rows, fields) {
+                    connection.query('insert into adverts(acc_id,item_id,category,text,qty,price,shipping,unit_price) values (?,?,?,?,?,?,?,?);', [req.session.acc_id, item_id, req.param("category"), req.param("text"), req.param("quant"), req.param("price"), req.param("ship"),Math.round((req.param("price")*1/req.param("quant")*1)*100)/100], function (err, rows, fields) {
                         if (!err) {
                             console.log("Advert Placed!");
                             res.send({"result": "success", "item_id": item_id});
