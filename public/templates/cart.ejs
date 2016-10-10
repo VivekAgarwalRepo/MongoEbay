@@ -1,5 +1,3 @@
-{{title}}
-
 <table class="table table-striped">
     <thead>
     <tr>
@@ -21,15 +19,15 @@
         </td>
         <td> {{item.text}}
         </td>
-        <td> {{item.qty}}
+        <td> {{item.quant}}
         </td>
         <td> {{item.unit_price}}
         </td>
-        <td>{{item.unit_price*item.qty}}
+        <td>{{item.unit_price*item.quant}}
         </td>
         <td> {{item.shipping}}
         </td>
-        <td> <input type="button" value="Remove from Cart" class="btn btn-primary" ng-click="">
+        <td> <input type="button" value="Remove from Cart" class="btn btn-primary" ng-click="remove(item.item_id)">
         </td>
     </tr>
 

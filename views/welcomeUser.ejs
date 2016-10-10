@@ -24,7 +24,11 @@
 
 </head>
 
-<body ng-app="placeadd"  >
+<body>
+
+<div class="container-fluid" ng-app="placeadd">
+<header ng-include="template/nav.ejs"></header>
+
 <div ui-view>
 
 <h1>Welcome <%= tagline %> </h1>
@@ -65,7 +69,7 @@ Shipping From : <input type="text" ng-model="adship">
 <div ng-controller="addToCartController" data-ng-view>
 
 </div>
-
+</div>
 
 </div>
 </body>

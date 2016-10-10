@@ -21,7 +21,7 @@ AddHandle.config(function ($stateProvider,$routeProvider,$urlRouterProvider) {
 
         })
         .state('home',{
-            url:'/home'
+            url:'/'
         })
         .state('showAdverts',{
         url:'/showAdvert'
@@ -56,19 +56,35 @@ AddHandle.controller('displayCartController',function ($scope,$http) {
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
         }
+        else
+            if(data=="Empty cart"){
+                alert("Your cart is currently empty!");
+            }
         else{
-
             $scope.shopcart=data;
             var total=0;
 
             for( var i in $scope.shopcart){
-
-                total=total+$scope.shopcart[i].unit_price*$scope.shopcart[i].qty;
+                total=total+$scope.shopcart[i].unit_price*$scope.shopcart[i].quant;
             }
             $scope.TotalAmt=total;
 
         }
     });
+
+    $scope.remove=function(item_id){
+        $http({
+            method:"POST",
+            url:"/removeFromCart",
+            data:{"item_id":item_id}
+        }).success(function (data){
+          if(data=="success")
+              alert("Item removed from cart ");
+            window.location.reload();
+        }).error(function () {
+            alert("Error encountered! Please try again later!");
+        });
+    }
 
 });
 
@@ -77,28 +93,33 @@ AddHandle.controller('addToCartController',function($scope,$http){
 
     var cartitems=[];
 
-    $scope.addToCart=function(itemId) {
+    $scope.addToCart=function(itemId,userqnt) {
         //alert("Item id added to cart as :"+itemId);
-        alert("Quant entered :"+$scope.userqnt);
-        $http({
-            method: "POST",
-            url: "/cart",
-            data:{
-                "id":itemId
-            }
-        }).success(function (data) {
-            if (data == "invalid-session") {
-                alert("Your session has expired! Please login again.");
-                window.location.assign("/login");
-            }
-            else{
-                alert("Added To Cart!");
-            }
-        }).error(function () {
+        if(userqnt==undefined){
+            alert("Please enter a valid quantity less than max available.");
+        }
+        else {
+            $http({
+                method: "POST",
+                url: "/cart",
+                data: {
+                    "id": itemId,
+                    "quant":userqnt
+                }
+            }).success(function (data) {
+                if (data == "invalid-session") {
+                    alert("Your session has expired! Please login again.");
+                    window.location.assign("/login");
+                }
+                else {
+                    alert("Added To Cart!");
+                }
+            }).error(function () {
 
-            alert("Error adding items to cart");
+                alert("Error adding items to cart");
 
-        })
+            })
+        }
     }
 
 });
@@ -106,14 +127,12 @@ AddHandle.controller('addToCartController',function($scope,$http){
 
 AddHandle.controller('advertisement',function($scope,$http){
 
-
-
     $scope.placeAdd=function() {
         // alert("Advert placed sucessfully");
-        alert("Text "+$scope.adtext);
-        alert("Number "+$scope.adqty);
-        alert("Price "+$scope.adprice);
-        alert("Shipping from "+$scope.adship);
+        // alert("Text "+$scope.adtext);
+        // alert("Number "+$scope.adqty);
+        // alert("Price "+$scope.adprice);
+        // alert("Shipping from "+$scope.adship);
 
         $http({
             method:"POST",

@@ -27,11 +27,9 @@
         <td> {{item.shipping}}
         </td>
         <td>
-               <input type="number" ng-model="userqnt" max="{{item.qty}}" value="1"> Max:{{item.qty}}
-
-
+            <input type="number" name="quant" string-to-number max={{item.qty}} min=1 ng-model="x" /> Max : {{item.qty}}
         </td>
-        <td> <input type="button" value="Add to Cart" class="btn btn-primary" ng-click="addToCart(item.item_id,userqnt);">
+        <td> <input type="button" value="Add to Cart" class="btn btn-primary" ng-click="addToCart(item.item_id,x);">
         </td>
     </tr>
 

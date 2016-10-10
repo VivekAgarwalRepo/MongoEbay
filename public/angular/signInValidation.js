@@ -25,7 +25,7 @@ regHandle.controller('regValidation',function($scope,$http){
 			if(data.result=="success")
 			 {
 				//alert(data.name);
-				window.location.assign("/home"+"?id="+data.acc_id+"&name="+data.name); // also try window.location.replace();
+				window.location.assign("/home"+"?id="+data.acc_id+"&name="+data.name+"#"); // also try window.location.replace();
 			 }
 			else
 				if(data.result=="present"){
@@ -68,7 +68,7 @@ userhandle.controller('control',function($scope,$http){
 				 var name=data.name;
 				 var id=data.acc_id;
 					
-				 window.location.assign("/home"+'?id='+id+'&name='+name);
+				 window.location.assign("/home"+'?id='+id+'&name='+name+"#/");
 				 
 			 }
 			//alert("Data Received from server");
