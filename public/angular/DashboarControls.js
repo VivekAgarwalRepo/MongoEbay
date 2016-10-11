@@ -26,6 +26,40 @@ AddHandle.config(function ($stateProvider,$routeProvider,$urlRouterProvider) {
         .state('showAdverts',{
         url:'/showAdvert'
     })
+        .state('checkout',{
+            url:'/checkout',
+            templateUrl:'templates/checkout.ejs',
+            controller: "checkOutController"
+    })
+
+});
+
+AddHandle.controller('checkOutController',function ($scope,$http) {
+
+
+
+});
+
+
+AddHandle.controller('payment',function ($scope,$http) {
+
+   $scope.validate=function(){
+        alert("Checking Payment Info");
+
+       $http({
+           method:"POST",
+           url:"/validate",
+           data:{
+               "name":$scope.name,
+               "shipping":$scope.shipping,
+               "cardNum":$scope.cardNum,
+               "validDate":$scope.validDate,
+               "cvv":$scope.cvv
+           }
+       }).success(function (data) {
+           alert(data);
+       })
+    }
 
 });
 
@@ -68,6 +102,8 @@ AddHandle.controller('displayCartController',function ($scope,$http) {
                 total=total+$scope.shopcart[i].unit_price*$scope.shopcart[i].quant;
             }
             $scope.TotalAmt=total;
+                if(total==0)
+                    $scope.checkout=true;
 
         }
     });
@@ -78,12 +114,19 @@ AddHandle.controller('displayCartController',function ($scope,$http) {
             url:"/removeFromCart",
             data:{"item_id":item_id}
         }).success(function (data){
-          if(data=="success")
-              alert("Item removed from cart ");
-            window.location.reload();
+          if(data=="Success") {
+              //alert("Item removed from cart ");
+              window.location.reload();
+          }
+          else
+              alert(data);
         }).error(function () {
             alert("Error encountered! Please try again later!");
         });
+    }
+
+    $scope.checkout=function () {
+
     }
 
 });
