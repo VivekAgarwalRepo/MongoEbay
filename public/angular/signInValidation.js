@@ -21,7 +21,7 @@ regHandle.controller('regValidation',function($scope,$http){
 				"lastName":$scope.newlname
 			}
 		}).success(function(data){
-			alert("Data Received from server");
+			//alert("Data Received from server");
 			if(data.result=="success")
 			 {
 				//alert(data.name);
@@ -48,7 +48,10 @@ var userhandle=angular.module("userhandler",[]);
 userhandle.controller('control',function($scope,$http){
 	$scope.valid=true;
 	$scope.login=function(valid){
-		
+
+		var hash = CryptoJS.SHA256($scope.password);
+		alert(hash);
+
 		$http({
 			method:"POST",
 			url:"/validate",
@@ -57,7 +60,7 @@ userhandle.controller('control',function($scope,$http){
 				"password":$scope.password,
 			}
 		}).success(function(data){
-			alert(data.result);
+			//alert(data.result);
 			if(data.result=="404"){
 				$scope.valid=false;
 				

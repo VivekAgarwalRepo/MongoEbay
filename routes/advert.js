@@ -35,7 +35,7 @@ exports.add=function(req,res){
         var item_id;
         connection.query('select item_id from adverts order by item_id desc limit 1;', [], function (err, rows, fields) {
             if (!err) {
-                console.log("rows :" + rows);
+               // console.log("rows :" + rows);
                 if (rows != "") {
                     item_id = rows[0].item_id * 1 + 1;
                     console.log("Current item_id :" + item_id);

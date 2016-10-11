@@ -31,7 +31,6 @@ AddHandle.config(function ($stateProvider,$routeProvider,$urlRouterProvider) {
             templateUrl:'templates/checkout.ejs',
             controller: "checkOutController"
     })
-
 });
 
 AddHandle.controller('checkOutController',function ($scope,$http) {
@@ -42,24 +41,24 @@ AddHandle.controller('checkOutController',function ($scope,$http) {
 
 
 AddHandle.controller('payment',function ($scope,$http) {
+      $scope.validate=function(){
+        $http({
+            method:"POST",
+            data:{
+                "name":$scope.name,
+                "shipping":$scope.shipping,
+                "cardNum":$scope.cardNum,
+                "validDate":$scope.validDate,
+                "cvv":$scope.cvv
+            },
+            url:"/pay",
 
-   $scope.validate=function(){
-        alert("Checking Payment Info");
-
-       $http({
-           method:"POST",
-           url:"/validate",
-           data:{
-               "name":$scope.name,
-               "shipping":$scope.shipping,
-               "cardNum":$scope.cardNum,
-               "validDate":$scope.validDate,
-               "cvv":$scope.cvv
-           }
-       }).success(function (data) {
-           alert(data);
-       })
+        }).success(function (data) {
+            for ( var i in data)
+            alert(data[i].Message);
+        });
     }
+
 
 });
 
