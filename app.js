@@ -54,6 +54,7 @@ app.post('/showCart',cartHandle.displayCart);
 app.post('/removeFromCart',cartHandle.removeItem);
 app.post('/pay',payment.validate);
 app.post('/showBiddingAdvert',advert.showBid);
+app.post('/addToBid',advert.addtobid);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

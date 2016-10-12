@@ -63,7 +63,28 @@ AddHandle.controller('displayBidsController',function ($scope,$http) {
 
     })
 
+    $scope.placeBid=function(item_id,amt,base){
+        //alert("Item id :"+item_id+" amount :"+amt);
+        $http({
+            method:"POST",
+            url:"/addToBid",
+            data:{
+                "item_id":item_id,
+                "bidamt":amt,
+                "base":base
+            }
+        }).success(function(data){
+            // alert(data);
+            if(data=="invalid-session"){
+                alert("Your session has expired! Please login again.");
+                window.location.assign("/login");
+            }
 
+            else
+                alert(data);
+
+        })
+    }
 
 });
 

@@ -106,6 +106,51 @@ exports.showNonBid=function (req,res) {
 
 };
 
+exports.addtobid=function (req,res) {
+    console.log("Placing Bid!");
+    connection.query('select highestamt from auction where item_id=?;',[req.param("item_id")],function(err, rows, fields){
+       console.log("rows :"+rows);
+        if(!err){
+            if(rows!=""){
+                console.log("Breakpoiny");
+                if(rows[0].highestamt>=req.param("bidamt")){
+                    console.log("Insufficient bid amount");
+                    res.send("Insufficient bid amount");
+                }
+                else{
+                    connection.query('update auction set acc_id=?, highestamt=? where item_id=?',[req.session.acc_id,req.param("bidamt"),req.param("item_id")],function(err, rows, fields){
+                        if(!err){
+                            console.log("Successfully updated to bid.");
+                            res.send("success");
+                        }
+                        else{
+                            console.log("Failure in updating to auction :"+err);
+                            res.send("Failure in bidding");
+                        }
+                    })
+                }
+            }
+            else {
+                connection.query('insert into auction(item_id,acc_id,base,highestamt) values (?,?,?,?);',[req.param("item_id"),req.session.acc_id,req.param("base"),req.param("bidamt")],function(err, rows, fields){
+                    if(!err){
+                        console.log("Successfully added to bid.");
+                        res.send("success");
+                    }
+                    else{
+                        console.log("Failure in adding to auction :"+err);
+                        res.send("Failure in bidding");
+                    }
+                })
+            }
+        }
+        else{
+            console.log("Error in selecting highest amt from auction");
+            res.send("failure");
+        }
+
+    })
+}
+
 exports.showBid=function(req,res){
     if(req.session.username==undefined){
         res.send("invalid-session");
