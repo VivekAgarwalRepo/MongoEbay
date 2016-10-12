@@ -48,11 +48,12 @@ app.post('/welcome',welcome.addUser);
 app.get('/home',homepage.dashboard);
 app.get('/logout',homepage.logout);
 app.post('/newAdvert',advert.add);
-app.post('/showAdvert',advert.show);
+app.post('/showAdvert',advert.showNonBid);
 app.post('/cart',cartHandle.addtocart);
 app.post('/showCart',cartHandle.displayCart);
 app.post('/removeFromCart',cartHandle.removeItem);
 app.post('/pay',payment.validate);
+app.post('/showBiddingAdvert',advert.showBid);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

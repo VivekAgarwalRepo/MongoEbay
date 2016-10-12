@@ -4,6 +4,7 @@ regHandle.controller('regValidation',function($scope,$http){
 	$scope.mismatch=true;
 	$scope.present=true;
 	$scope.inserterr=true;
+
 	$scope.register=function(valid){
 		$scope.mismatch=true;
 		if($scope.email!==$scope.email2){
@@ -49,15 +50,15 @@ userhandle.controller('control',function($scope,$http){
 	$scope.valid=true;
 	$scope.login=function(valid){
 
-		var hash = CryptoJS.SHA256($scope.password);
-		alert(hash);
+
+
 
 		$http({
 			method:"POST",
 			url:"/validate",
 			data:{
 				"username":$scope.username,
-				"password":$scope.password,
+				"password":$scope.password
 			}
 		}).success(function(data){
 			//alert(data.result);

@@ -10,6 +10,11 @@ AddHandle.config(function ($stateProvider,$routeProvider,$urlRouterProvider) {
             {
                 templateUrl:"templates/displayAdverts.ejs",
                 controller:"displayAdsController"
+            })
+        .when('/bid',
+            {
+                templateUrl:"templates/displayBids.ejs",
+                controller:"displayBidsController"
             });
 
     $stateProvider
@@ -26,6 +31,9 @@ AddHandle.config(function ($stateProvider,$routeProvider,$urlRouterProvider) {
         .state('showAdverts',{
         url:'/showAdvert'
     })
+        .state('bid',{
+            url:'/bid'
+        })
         .state('checkout',{
             url:'/checkout',
             templateUrl:'templates/checkout.ejs',
@@ -39,6 +47,25 @@ AddHandle.controller('checkOutController',function ($scope,$http) {
 
 });
 
+AddHandle.controller('displayBidsController',function ($scope,$http) {
+    $http({
+        method:"POST",
+        url:"/showBiddingAdvert",
+    }).success(function(data){
+       // alert(data);
+        if(data=="invalid-session"){
+            alert("Your session has expired! Please login again.");
+            window.location.assign("/login");
+        }
+
+        else
+            $scope.auctions=data;
+
+    })
+
+
+
+});
 
 AddHandle.controller('payment',function ($scope,$http) {
       $scope.validate=function(){
@@ -63,11 +90,13 @@ AddHandle.controller('payment',function ($scope,$http) {
 });
 
 AddHandle.controller('displayAdsController',function($scope,$http){
+
     $scope.popcart=false;
     $http({
         method:"POST",
         url:"/showAdvert",
     }).success(function(data){
+
     if(data=="invalid-session"){
         alert("Your session has expired! Please login again.");
         window.location.assign("/login");
@@ -184,7 +213,8 @@ AddHandle.controller('advertisement',function($scope,$http){
                 "quant":$scope.adqty,
                 "price":$scope.adprice,
                 "ship":$scope.adship,
-                "category":$scope.category
+                "category":$scope.category,
+                "bidding":$scope.bidding
             }
         }).success(function(data){
             if(data=="invalid-session") {

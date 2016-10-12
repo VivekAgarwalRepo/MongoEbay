@@ -18,6 +18,8 @@ connection.connect(function(err) {
 		  console.log('connected with id ' + connection.threadId);
 		});
 
+var sjcl = require("sjcl");
+
 exports.addUser=function(req,res){
 	console.log("Email :"+req.param("nemail"));
 	console.log("npassword :"+req.param("npassword"));
@@ -25,14 +27,13 @@ exports.addUser=function(req,res){
 	console.log("lastName :"+req.param("lastName"));
 	
 	var user=req.param('nemail');
-	var pass=req.param('npassword');
+
 	var acc_id;
 	var fname=req.param("firstName");
 	var lname=req.param("lastName");
-	
-	console.log("Server Fname :"+fname);
-	console.log("Server Lname :"+lname);
-	
+	var pass=sjcl.encrypt("newpass",req.param("npassword"));
+
+
 	 connection.query('select acc_id from userinfo order by acc_id desc limit 1;',[],function(err, rows, fields){
 		 if(!err){
 			// console.log("rows :"+rows[0].acc_id);
@@ -43,13 +44,13 @@ exports.addUser=function(req,res){
 			 console.log("Error in obtaining last acc_id :"+err);
 		 }
 	  });
-	
-	
+
+
 	connection.query('select email from userinfo where email=?;',[user], function(err, rows, fields){
 		  if (!err)
 		    {
-			 
-			  
+
+
 			  if(rows[0]==undefined){
 			  connection.query('INSERT INTO userinfo (acc_id,fname,lname,email,password) VALUES(?,?,?,?,?);',[acc_id,fname,lname,user.toString(),pass.toString()],function(err, rows, fields){
 				  if(!err){
@@ -61,9 +62,9 @@ exports.addUser=function(req,res){
 					  console.log("Insert New User Error :"+err);
 					  res.send({"result":"insertError"});
 				  }
-			  
+
 			  });
-			  
+
 		    }
 			  else{
 				  	console.log("User exists!");
@@ -71,8 +72,8 @@ exports.addUser=function(req,res){
 			  }
 		    }
 		  else{
-		    console.log('Error :'+err); 
+		    console.log('Error :'+err);
 		  }
 		});
-		
+
 };
