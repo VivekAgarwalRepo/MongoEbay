@@ -1,8 +1,30 @@
 body {
-  padding: 50px;
+  padding: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
 }
 
+.bs-docs-nav {
+  margin-bottom: 0;
+  background-color: #fff;
+  border-bottom: 0;
+}
+.navbar{
+  margin-top: 0%;
+  min-height: 30px;
+  margin-bottom: 0px;
+}
+
+.dropdown-toggle:hover .dropdown-menu {
+  display: block;
+}
+
+.navbar-default{
+
+  background: none;
+  border-radius: 1px;
+
+}
 a {
   color: #00B7FF;
 }

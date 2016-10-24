@@ -1,87 +1,194 @@
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'USAdream$123',
-  database : 'accounts'
-});
-
-connection.connect(function(err) {
-	  if (err) {
-		    console.error('error connecting: ' + err.stack);
-		    return;
-		  }
-
-		  console.log('connected with id ' + connection.threadId);
-		});
-
+var mongo = require("./mongo");
+var mongoURL = "mongodb://localhost:27017/EbayDB";
 
 var sjcl = require("sjcl");
+var reqno=0;
 
+exports.getTime=function (req,res) {
+
+	connection.query('select lastlogin from userinfo where acc_id = ?;',[req.session.acc_id], function(err, rows, fields) {
+		if (!err) {
+			console.log("Last Login :"+rows[0].lastSeen);
+			res.send(rows)
+		}
+		else{
+			console.log("Last seen error :"+err)
+		}
+	});
+	connect.returnConnection(connection);
+}
+
+exports.getBasicInfo=function (req,res) {
+
+	if(req.session.username==undefined){
+		res.send("invalid-session");
+	}
+	else{
+		connection.query('select fname,lname,acc_id,bday,contact,location from userinfo where acc_id=?;',[req.session.acc_id], function(err, rows, fields) {
+			if(!err){
+				res.send(rows);
+			}
+			else{
+				res.status(404);
+			}
+		});
+	}
+	connect.returnConnection(connection);
+}
+
+exports.setbday=function (req,res) {
+
+	connection.query('update userinfo set bday=? where acc_id=?;',[req.param("birthday"),req.session.acc_id], function(err, rows, fields) {
+		if (!err) {
+			console.log("Updated user bday!");
+		}
+		else{
+			console.log(err);
+		}
+	})
+	res.send("ok");
+	connect.returnConnection(connection);
+}
+
+exports.setcont=function (req,res) {
+
+	connection.query('update userinfo set contact=? where acc_id=?;',[req.param("contact"),req.session.acc_id], function(err, rows, fields) {
+		if (!err) {
+			console.log("Updated user bday!");
+		}
+		else{
+			console.log(err);
+		}
+	})
+	res.send("ok");
+	connect.returnConnection(connection);
+
+}
+
+exports.setloc=function (req,res) {
+
+	connection.query('update userinfo set location=? where acc_id=?;',[req.param("location"),req.session.acc_id], function(err, rows, fields) {
+		if (!err) {
+			console.log("Updated user location!");
+		}
+		else{
+			console.log(err);
+		}
+	})
+	res.send("ok");
+	connect.returnConnection(connection);
+}
 
 exports.validate=function(req,res){
+	reqno++;
+	console.log("Request number :"+reqno);
+
+	console.log("Connection object type:"+typeof (connection));
+
+
 	var user=req.param('username');
 	var pass=req.param('password');
-
-
-	// var original="vivek";
-	// var encrypt=sjcl.encrypt("password",original);
-	// console.log("Encrpyted shit :"+encrypt);
-    //
-	// var decrypt=sjcl.decrypt("password",encrypt);
-	// console.log("Decrpted Shit :"+decrypt);
-
 
 	console.log("Username for Login :"+user);
 	console.log("Password for Login :"+pass);
 
-	connection.query('select * from userinfo where email=?;',[user.toString()], function(err, rows, fields) {
-		  if (!err)
-		    {
-			  console.log(rows);
-			  if(rows[0]==undefined){
-				  console.log("Incorrect Username.");
-				  
-				  res.send({"result":"404"});
-			  }
-			  else
-			  {
 
-				  try {
-					  var decryptedData = sjcl.decrypt("newpass", rows[0].password);
-					  if (decryptedData != pass) {
-						  console.log("User pass from db after decryption=" + decryptedData);
-						  console.log("User pass from client =" + pass);
-						  console.log("Incorrect Password.");
+	mongo.connect(mongoURL,function () {
+		coll = mongo.collection('userinfo');
 
-						  res.send({"result": "404"});
-					  }
-					  else {
-						  console.log("User pass from db after decryption=" + decryptedData);
-						  console.log("User pass from client =" + pass[0]);
-						  if (decryptedData === pass) {
-							  console.log("Password Correct !");
-							  req.session.username = user.toString();
-							  req.session.password = rows[0].password.toString();
-							  req.session.acc_id = rows[0].acc_id;
-							  req.session.name = rows[0].fname + " " + rows[0].lname;
-							  res.send({
-								  "result": "Ok",
-								  "name": rows[0].fname + " " + rows[0].lname,
-								  "acc_id": rows[0].acc_id
-							  });
+		coll.findOne({email:user},function (err,result) {
+			if(!err){
+				if(result==undefined){
+					console.log("Incorrect Username");
+					res.send({"result":"404"});
+				}
 
-						  }
-					  }
-				  }
-				  catch (err){
-					  res.send({"result": "404"});
-				  }
-			  }
-			 
-		    }
-		  else
-		    console.log('Error while performing lookup Query:'+err);
-		});
+				else{
+					try{
+						var decryptedData = sjcl.decrypt("newpass", result.password);
+						if (decryptedData != pass) {
+								  console.log("User pass from db after decryption=" + decryptedData);
+								  console.log("User pass from client =" + pass);
+								  console.log("Incorrect Password.");
+
+								  res.send({"result": "404"});
+							  }
+							  else {
+								  console.log("User pass from db after decryption=" + decryptedData);
+								  console.log("User pass from client =" + pass[0]);
+								  if (decryptedData === pass) {
+									  console.log("Password Correct !");
+									  req.session.username = user.toString();
+									  req.session.password = result.password.toString();
+									  req.session.acc_id = result.acc_id;
+									  req.session.name = result.fname ;
+									  res.send({
+										  "result": "Ok",
+										  "name": result.fname + " " + result.lname,
+										  "acc_id": result.acc_id
+									  });
+								  }
+							}
+					}
+					catch (err){
+						res.send({"result": "404"});
+					}
+				}
+			}
+			else{
+				console.log('Error while performing lookup Query:'+err);
+			}
+		})
+	})
+
+	// connection.query('select * from userinfo where email=?;',[user.toString()], function(err, rows, fields) {
+	// 	  if (!err)
+	// 	    {
+	// 		  console.log(rows);
+	// 		  if(rows[0]==undefined){
+	// 			  console.log("Incorrect Username.");
+    //
+	// 			  res.send({"result":"404"});
+	// 		  }
+	// 		  else
+	// 		  {
+	// 			  try {
+	// 				  var decryptedData = sjcl.decrypt("newpass", rows[0].password);
+	// 				  if (decryptedData != pass) {
+	// 					  console.log("User pass from db after decryption=" + decryptedData);
+	// 					  console.log("User pass from client =" + pass);
+	// 					  console.log("Incorrect Password.");
+    //
+	// 					  res.send({"result": "404"});
+	// 				  }
+	// 				  else {
+	// 					  console.log("User pass from db after decryption=" + decryptedData);
+	// 					  console.log("User pass from client =" + pass[0]);
+	// 					  if (decryptedData === pass) {
+	// 						  console.log("Password Correct !");
+	// 						  req.session.username = user.toString();
+	// 						  req.session.password = rows[0].password.toString();
+	// 						  req.session.acc_id = rows[0].acc_id;
+	// 						  req.session.name = rows[0].fname ;
+	// 						  res.send({
+	// 							  "result": "Ok",
+	// 							  "name": rows[0].fname + " " + rows[0].lname,
+	// 							  "acc_id": rows[0].acc_id
+	// 						  });
+    //
+	// 					  }
+	// 				  }
+	// 			  }
+	// 			  catch (err){
+	// 				  res.send({"result": "404"});
+	// 			  }
+	// 		  }
+    //
+	// 	    }
+	// 	  else
+	// 	    console.log('Error while performing lookup Query:'+err);
+	// 	});
+	connect.returnConnection(connection);
 
 };
+

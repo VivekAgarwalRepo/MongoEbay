@@ -1,9 +1,7 @@
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
-
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	<!-- Latest compiled and minified CSS -->
@@ -12,6 +10,7 @@
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
@@ -20,18 +19,141 @@
 	<script src="angular/DashboarControls.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-cookies.min.js"></script>
+	<!-- load momentJS (required for angular-moment) -->
 
 
 </head>
 
-<body>
+<body ng-app="placeadd" ng-controller="EventController" style="background-color: #fbfbfb">
 
-<div class="container-fluid" ng-app="placeadd">
-<header ng-include="'templates/nav.ejs'"></header>
+
+<nav class="navbar navbar-default " style="font-size:12.5px; background-color: white"  >
+
+	<div class="row" style="margin-top: 4px">
+		<div class="col-md-1" style="margin-left: 60px">
+			<div class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+				Hi <strong><%= tagline %></strong>!<span class="caret"></span>
+			</div>
+			<ul class="dropdown-menu">
+				<li><a ui-sref="about" ng-model="account" ng-click="logEvent('account','button')">Account</a></li>
+				<li><a ui-sref="logout" ng-model="logout" ng-click="logEvent('logout','button')">Sign Out</a></li>
+
+			</ul>
+
+		</div>
+
+		<div class="col-md-2">
+
+			<p >|&nbsp;<a ui-sref="home" ng-model="dailydeals" ng-click="logEvent('dailydeals','link')" style="color:black">  Daily Deals </a>&nbsp;
+
+					|&nbsp;<a  ui-sref="sell" ng-model="sell" ng-click="logEvent('sell','link')" style="color:black"> Sell </a>&nbsp;
+
+					|&nbsp;<a ui-sref="bid" ng-model="bid" ng-click="logEvent('bid','link')" style="color:black"> Bid Now </a>&nbsp;
+
+
+
+			</p>
+		</div>
+
+		<div class="col-md-3" ng-controller="dateController">
+			Last Login : {{lastseen | date:'medium'}}
+		</div>
+
+		<div class="col-md-1 col-md-offset-3">
+			<div href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+				My eBay</div>
+			<ul class="dropdown-menu">
+				<li><a ui-sref="history" ng-model="purchases" ng-click="logEvent('purchases','link')">Purchase History</a></li>
+				<li><a ui-sref="useradvert" ng-model="userads" ng-click="logEvent('userads','link')">My Adverts</a></li>
+			</ul>
+		</div>
+		<div class="col-md-1">
+			<a ui-sref="cart">
+				<img src="shopcart.png" ng-model="cartshop" ng-click="logEvent('cartshop','image')" height="18" width="18">
+			</a>
+		</div>
+
+
+	</div>
+
+
+</nav>
+
+<div style="background-color: #f1f1f1">
+<div  ui-view>
+
+	<div class="col-md-8 col-md-offset-2" style="margin-top: 10px;">
+
+		<div class="panel panel-default">
+
+				<ul class="list-group">
+					<li ng-repeat="item in advertises" class="list-group-item">
+						<div class="row">
+							<div class="col-md-5" align="center" >
+								<h4>Features in : <label>{{item.category}}</label></h4>
+							</div>
+							<div class="col-md-4">
+								<h4>Sold by :<a href="">{{item.fname}} {{item.lname}}</a></h4>
+							</div>
+							<div class="col-md-3">
+								<h4>Unit Price : {{item.unit_price}} $</h4>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-5" >
+								<img src="placeholderImage.jpg">
+							</div>
+							<div class="col-md-7">
+								<div class="panel panel-default">
+									<div class="panel-body" style="background-color: #f6f6f6">
+										<div class="row">
+											<div class="col-md-12">
+												<h4>Title :{{item.text}}</h4>
+											</div>
+
+										</div>
+										<div class="row" style="margin-top: 20px">
+											<div class="col-md-6">
+												<h4>Qty Available : {{item.qty}}</h4>
+											</div>
+											<div class="col-md-6">
+												<h4>Shipping From : {{item.shipping}}</h4>
+											</div>
+										</div>
+									</div>
+									<div class="panel-footer" style="background-color: #fcfcfc">
+										<div class="row">
+
+												<div class="col-md-6">
+													Enter Quantity: <input type="number" ng-model="quantitytobuy" ng-click="logEvent('quantitytobuy','number')" name="quant" string-to-number max={{item.qty}} style="height: 30px; width: 60px" min=1/>
+												</div>
+												<div class="col-md-1 ">
+													<input type="button" value="Add to Cart" ng-controller="addToCartController" class="btn btn-primary" ng-click="addToCart(item.item_id,quantitytobuy);">
+													</div>
+											</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+
+	</div>
+</div>
+</div>
+</body>
+</html>
+
+<!--
+<div class="container-fluid" ng-app="placeadd" style="background-color: #fdfdfd">
+
 
 <div ui-view>
 
-<h1>Welcome <%= tagline %> </h1>
+
 <a href="/logout">logout</a>
 
 <p> Place an add </p>
@@ -81,5 +203,4 @@ Shipping From : <input type="text" ng-model="adship">
 </div>
 
 </div>
-</body>
-</html>
+-->

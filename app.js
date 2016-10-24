@@ -1,8 +1,4 @@
 
-/**
- * Module dependencies.
- */
-
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
@@ -16,8 +12,14 @@ var express = require('express')
     , cartHandle=require('./routes/cart')
     ,payment = require('./routes/cardValidation');
 
-var app = express();
+var mongoSessionConnectURL="mongodb://localhost:27017/EbayDB";
 var session=require("express-session");
+var mongoStore = require("connect-mongo")(session);
+var mongo= require("./routes/mongo");
+
+var app = express();
+module.exports=app
+
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -46,7 +48,7 @@ app.get('/login', home.login);
 app.post('/validate',validation.validate);
 app.post('/welcome',welcome.addUser);
 app.get('/home',homepage.dashboard);
-app.get('/logout',homepage.logout);
+app.post('/logout',homepage.logout);
 app.post('/newAdvert',advert.add);
 app.post('/showAdvert',advert.showNonBid);
 app.post('/cart',cartHandle.addtocart);
@@ -55,7 +57,18 @@ app.post('/removeFromCart',cartHandle.removeItem);
 app.post('/pay',payment.validate);
 app.post('/showBiddingAdvert',advert.showBid);
 app.post('/addToBid',advert.addtobid);
+app.post('/basicInfo',validation.getBasicInfo);
+app.post('/getBids',cartHandle.checkBid);
+app.get('/getTime',validation.getTime);
+app.get('/getHistory',cartHandle.getHistory);
+app.get('/useradvertinfo',cartHandle.getUserAds);
+app.post('/updateBday',validation.setbday);
+app.post('/updateContact',validation.setcont);
+app.post('/updateLocation',validation.setloc);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+mongo.connect(mongoSessionConnectURL, function(){
+  console.log('Connected to mongo at: ' + mongoSessionConnectURL);
+  http.createServer(app).listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
+  });
 });
