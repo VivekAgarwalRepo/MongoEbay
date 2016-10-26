@@ -15,7 +15,7 @@ var express = require('express')
 var mongoSessionConnectURL="mongodb://localhost:27017/EbayDB";
 var session=require("express-session");
 var mongoStore = require("connect-mongo")(session);
-var mongo= require("./routes/mongo");
+var mongo = require("C:\\Users\\Vivek Agarwal\\Desktop\\Mongo Ebay\\routes\\mongo.js");
 
 var app = express();
 module.exports=app

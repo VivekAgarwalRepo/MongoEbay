@@ -250,7 +250,6 @@ AddHandle.controller('displayBidsController',function ($scope,$http) {
 AddHandle.controller('navController',function ($scope,$http) {
     var obj = this;
     obj.time = new Date();
-
 })
 
 AddHandle.controller('payment',function ($scope,$http) {
