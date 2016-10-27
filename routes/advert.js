@@ -3,7 +3,7 @@ connect=require('./mysqlconnect');
 connection = connect.getconnection();
 var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/EbayDB";
-
+var mq_client = require('../rpc/client');
 
 // console.log("Connection received as :"+connection);
 
@@ -111,21 +111,37 @@ exports.add=function(req,res){
 
 exports.showNonBid=function (req,res) {
 
+
+
     if(req.session.username==undefined){
         res.send("invalid-session");
     }
     else {
 
-        coll=mongo.collection('adverts');
-        currID=req.session.acc_id;
+        var msg_payload={"acc_id":req.session.acc_id}
 
-        coll.find({acc_id:{$ne:currID},bid:false},function (err,cursor) {
-            cursor.toArray(function(err, documents) {
-              console.log("Document Array Length :"+documents.length);
-                res.send(documents);
-            })
-
+        mq_client.make_request('adverts_queue',msg_payload, function(err,results) {
+            console.log("Results recvd as :" + JSON.stringify(results));
+            if (err) {
+                throw err;
+            }
+            else {
+                if(results.code == 200){
+                    res.send(results.value);
+                }
+            }
         });
+
+        // coll=mongo.collection('adverts');
+        // currID=req.session.acc_id;
+        //
+        // coll.find({acc_id:{$ne:currID},bid:false},function (err,cursor) {
+        //     cursor.toArray(function(err, documents) {
+        //       console.log("Document Array Length :"+documents.length);
+        //         res.send(documents);
+        //     })
+        //
+        // });
 
     }
     connect.returnConnection(connection);

@@ -5,7 +5,8 @@ var mongoURL = "mongodb://localhost:27017/EbayDB";
 var waterfall = require('async-waterfall');
 var Promise = require('promise');
 // console.log("Connection received as :"+connection);
-
+var mq_client = require('../rpc/client');
+var amqp = require('amqplib/callback_api');
 
 var cartitems=[];
 
@@ -15,22 +16,51 @@ exports.addtocart=function(req,res){
     {
         coll=mongo.collection('cart');
 
-        coll.update({item_id:req.param('id')}, {$set: {acc_id:req.session.acc_id,item_id:req.param("id"),quant:req.param("quant")}},{upsert:true},function (err,result) {
+        msg_payload={item_id:req.param('id'),acc_id:req.session.acc_id,item_id:req.param("id"),quant:req.param("quant")};
 
-            if(!err){
-                if(result==undefined){
-                    console.log("Cart operation insertion failed!")
-                }
-                else{
+        mq_client.make_request('add_to_cart_queue',msg_payload, function(err,results) {
+            console.log("Results recvd as :" + JSON.stringify(results));
+            if (err) {
+                throw err;
+            }
+            else {
+
+                if(results.code=200){
                     console.log("Cart operation insertion success");
                     res.send("Success");
                 }
-            }
-            else{
-                console.log("Error encountered in addition to cart as :"+err);
-            }
 
+                else{
+                    console.log("Error encountered in addition to cart as :"+err);
+                    res.send("Failure");
+                }
+
+            }
         });
+
+        // coll.update({item_id:req.param('id')}, {$set: {acc_id:req.session.acc_id,item_id:req.param("id"),quant:req.param("quant")}},{upsert:true},function (err,result) {
+        //
+        //     if(!err){
+        //         if(result==undefined){
+        //             console.log("Cart operation insertion failed!")
+        //         }
+        //         else{
+        //             console.log("Cart operation insertion success");
+        //             res.send("Success");
+        //         }
+        //     }
+        //     else{
+        //         console.log("Error encountered in addition to cart as :"+err);
+        //     }
+        //
+        // });
+
+
+
+
+
+
+
         // console.log("id for item :"+req.param("id")+" and quant :"+req.param("quant"));
         //
         //     connection.query('insert into cart(acc_id,item_id,quant) values (?,?,?) ON DUPLICATE KEY UPDATE quant=?;', [req.session.acc_id,req.param("id"),req.param("quant"),req.param("quant")], function (err, rows, fields) {
@@ -229,31 +259,37 @@ exports.displayCart=function(req,res){
 
     if(req.session.username) //check whether session is valid
     {
-        var resultColl=[];
-        cart=mongo.collection('cart');
-        adverts=mongo.collection('adverts');
 
-                cart.find({acc_id: req.session.acc_id}, function (err, cursor) {
-                    if (!err) {
-                        cursor.toArray(function (err, item) {
 
-                                 console.log("Details from cart :" + JSON.stringify(item));
-                                    for (var i = 0; i < item.length; i++) {
-                                    console.log("item.item_id ="+item[i].item_id);
 
-                                    getAdverts(item[i],function (data) {
-                                        resultColl.push(data[0]);
-                                        console.log("i="+i+" resultcoll :"+JSON.stringify(resultColl));
+        // var resultColl=[];
+        // cart=mongo.collection('cart');
+        // adverts=mongo.collection('adverts');
+        //
+        //         cart.find({acc_id: req.session.acc_id}, function (err, cursor) {
+        //             if (!err) {
+        //                 cursor.toArray(function (err, item) {
+        //
+        //                          console.log("Details from cart :" + JSON.stringify(item));
+        //                             for (var i = 0; i < item.length; i++) {
+        //                             console.log("item.item_id ="+item[i].item_id);
+        //
+        //                             getAdverts(item[i],function (data) {
+        //                                 resultColl.push(data[0]);
+        //                                 console.log("i="+i+" resultcoll :"+JSON.stringify(resultColl));
+        //
+        //                             });
+        //                                 if(i==item.length-1)
+        //                                     setTimeout(function () {
+        //                                         res.send(resultColl);
+        //                                     },100);
+        //                         }
+        //                 })
+        //             }
+        //         })
 
-                                    });
-                                        if(i==item.length-1)
-                                            setTimeout(function () {
-                                                res.send(resultColl);
-                                            },100);
-                                }
-                        })
-                    }
-                })
+
+
         // connection.query('select adverts.item_id,adverts.text,adverts.category,adverts.price,adverts.unit_price,cart.quant,adverts.shipping from adverts inner join cart on adverts.item_id=cart.item_id where cart.acc_id=?;',[req.session.acc_id],function (err, rows, fields) {
         //     if(!err){
         //         if(rows!=undefined){
