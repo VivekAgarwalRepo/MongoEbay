@@ -89,21 +89,48 @@ exports.addtocart=function(req,res){
 
 exports.removeItem=function (req,res) {
 
-    cart.remove({item_id: req.param("item_id"),acc_id:req.session.acc_id}, function (err, result) {
-        if(!err){
-            if(result!=undefined){
-                console.log("Item "+req.param("item_id")+" removed from cart! + result :"+result);
-                            res.send("Success");
+    if (req.session.username) //check whether session is valid
+    {
+        cart=mongo.collection('cart');
+        var msg_payload={"acc_id":req.session.acc_id,"item_id": req.param("item_id")};
+
+        mq_client.make_request('remove_cart_queue',msg_payload, function(err,results){
+            console.log("Results recvd as :"+JSON.stringify(results));
+            if(err){
+                throw err;
             }
-            else{
-                console.log("Item "+req.param("item_id")+" could not be deleted from cart!");
-                res.send("404");
+            else {
+                if (results.code == 200) {
+                    res.send("Success");
+                }
+                else{
+                    res.send("404");
+                }
             }
-        }
-        else{
-            res.send("404");
-        }
-    });
+        });
+
+    }
+    else{
+        res.send("invalid-session");
+    }
+
+
+    //
+    // cart.remove({item_id: req.param("item_id"),acc_id:req.session.acc_id}, function (err, result) {
+    //     if(!err){
+    //         if(result!=undefined){
+    //             console.log("Item "+req.param("item_id")+" removed from cart! + result :"+result);
+    //                         res.send("Success");
+    //         }
+    //         else{
+    //             console.log("Item "+req.param("item_id")+" could not be deleted from cart!");
+    //             res.send("404");
+    //         }
+    //     }
+    //     else{
+    //         res.send("404");
+    //     }
+    // });
 
 
 
@@ -133,53 +160,66 @@ exports.checkBid=function (req,res) {
     console.log("Checking for bid victories!");
     if (req.session.username) //check whether session is valid
     {
-        auction=mongo.collection('auction');
-        adverts=mongo.collection('adverts');
-        cart=mongo.collection('cart');
+        var msg_payload={"acc_id":req.session.acc_id}
 
-        auction.find({acc_id:req.session.acc_id},function (err,aucrescur) {
-        if(!err && aucrescur!=undefined){
+        mq_client.make_request('checkBid_queue',msg_payload, function(err,results){
+            console.log("Results recvd as :"+JSON.stringify(results));
+            if(err){
+                throw err;
+            }
+            else{
+                if(results.code == 200){
+                    res.send("success");
+                }
+                else{
+                res.send("failure");
+                }
+            }
+        });
+    }
+        // auction=mongo.collection('auction');
+        // adverts=mongo.collection('adverts');
+        // cart=mongo.collection('cart');
+        //
+        // auction.find({acc_id:req.session.acc_id},function (err,aucrescur) {
+        // if(!err && aucrescur!=undefined){
+        //
+        //             aucrescur.toArray(function (err,aucdocs) {
+        //                 for(var i in aucdocs){
+        //                     adverts.findOne({item_id: aucdocs.item_id}, function (err, advertres) {
+        //                         if (!err && advertres != undefined) {
+        //                             if(advertres.dueDate.getTime()<=Date.now()){
+        //                                 cart.insert({acc_id:req.session.acc_id,item_id:advertres.item_id,quant:advertres.qty},function (err,cartsuc) {
+        //                                     if(cartsuc!=undefined && !err){
+        //                                         auction.remove({item_id:advertres.item_id},function (err,remsuc) {
+        //                                             if(!err && remsuc!=undefined){
+        //                                                 adverts.remove({item_id:advertres.item_id},function (err,finalstep) {
+        //                                                     if(!err && finalstep!=undefined){
+        //                                                         res.send("success")
+        //                                                     }
+        //                                                     else{
+        //                                                         res.send("failure")
+        //                                                     }
+        //                                                 })
+        //                                             }
+        //
+        //                                         })
+        //                                     }
+        //                                     else{
+        //                                         res.send("failure")
+        //                                     }
+        //                                 })
+        //                             }
+        //                         }
+        //                         else{
+        //
+        //                         }
+        //
+        //                     })
+        //                 }
+        //
+        //             })
 
-                    aucrescur.toArray(function (err,aucdocs) {
-                        for(var i in aucdocs){
-                            adverts.findOne({item_id: aucdocs.item_id}, function (err, advertres) {
-                                if (!err && advertres != undefined) {
-                                    if(advertres.dueDate.getTime()<=Date.now()){
-                                        cart.insert({acc_id:req.session.acc_id,item_id:advertres.item_id,quant:advertres.qty},function (err,cartsuc) {
-                                            if(cartsuc!=undefined && !err){
-                                                auction.remove({item_id:advertres.item_id},function (err,remsuc) {
-                                                    if(!err && remsuc!=undefined){
-                                                        adverts.remove({item_id:advertres.item_id},function (err,finalstep) {
-                                                            if(!err && finalstep!=undefined){
-                                                                res.send("success")
-                                                            }
-                                                            else{
-                                                                res.send("failure")
-                                                            }
-                                                        })
-                                                    }
-
-                                                })
-                                            }
-                                            else{
-                                                res.send("failure")
-                                            }
-                                        })
-                                    }
-                                }
-                                else{
-
-                                }
-
-                            })
-                        }
-
-                    })
-        }
-        else{
-            res.send("failure")
-        }
-    })
 
 
         // connection.query('select auction.*, adverts.dueDate,adverts.category,adverts.text,adverts.qty,adverts.shipping from auction,adverts where auction.acc_id=? and adverts.item_id=auction.item_id;',[req.session.acc_id],function (err, rows, fields) {
@@ -212,44 +252,43 @@ exports.checkBid=function (req,res) {
         //
         //     }
         // });
-    }
     else {
         res.send("invalid-session");
     }
 }
 
-function getAdverts(item,callback){
-
-    var resultColl=[];
-
-                adverts.find({item_id: item.item_id}, function (err, cursor2) {
-
-                        cursor2.toArray(function (err, result) {
-                                if(!err) {
-
-                                    if (result != undefined) {
-                                        resultColl.push({
-                                            "item_id": result[0].item_id,
-                                            "text": result[0].text,
-                                            "category": result[0].category,
-                                            "price": result[0].price,
-                                            "unit_price": result[0].unit_price,
-                                            "shipping": result[0].shipping,
-                                            "quant": item.quant
-                                        })
-                                    }
-                                    else{
-                                        console.log("result in lookup :"+resultColl);
-                                    }
-                                    console.log("Result in adverts :"+JSON.stringify(resultColl));
-                                    callback(resultColl);
-                                }
-                                else{
-                                        console.log("Error :"+err);
-                                    }
-                                })
-                        })
-}
+// function getAdverts(item,callback){
+//
+//     var resultColl=[];
+//
+//                 adverts.find({item_id: item.item_id}, function (err, cursor2) {
+//
+//                         cursor2.toArray(function (err, result) {
+//                                 if(!err) {
+//
+//                                     if (result != undefined) {
+//                                         resultColl.push({
+//                                             "item_id": result[0].item_id,
+//                                             "text": result[0].text,
+//                                             "category": result[0].category,
+//                                             "price": result[0].price,
+//                                             "unit_price": result[0].unit_price,
+//                                             "shipping": result[0].shipping,
+//                                             "quant": item.quant
+//                                         })
+//                                     }
+//                                     else{
+//                                         console.log("result in lookup :"+resultColl);
+//                                     }
+//                                     console.log("Result in adverts :"+JSON.stringify(resultColl));
+//                                     callback(resultColl);
+//                                 }
+//                                 else{
+//                                         console.log("Error :"+err);
+//                                     }
+//                                 })
+//                         })
+// }
 
 
 
@@ -260,7 +299,19 @@ exports.displayCart=function(req,res){
     if(req.session.username) //check whether session is valid
     {
 
+        var msg_payload={"acc_id":req.session.acc_id};
 
+        mq_client.make_request('display_cart_queue',msg_payload, function(err,results){
+            console.log("Results recvd as :"+JSON.stringify(results));
+            if(err){
+                throw err;
+            }
+            else {
+                if (results.code == 200) {
+                    res.send(results.value);
+                }
+            }
+        });
 
         // var resultColl=[];
         // cart=mongo.collection('cart');

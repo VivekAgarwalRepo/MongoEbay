@@ -11,6 +11,10 @@ var express = require('express')
     , cartHandle=require('./routes/cart')
     ,payment = require('./routes/cardValidation');
 
+var passport = require('passport');
+require('./routes/passport')(passport);
+
+
 var mongoSessionConnectURL="mongodb://localhost:27017/EbayDB";
 var session=require("express-session");
 var mongoStore = require("connect-mongo")(session);
@@ -28,6 +32,7 @@ app.set('view engine', 'ejs');
 app.use(express.cookieParser());
 app.use(session({resave:true , saveUninitialized:true, cookieName: 'ebay-session',    secret: 'ebaysession',duration: 30 * 60 * 1000,    activeDuration: 5 * 60 * 1000,}));
 
+app.use(passport.initialize());
 
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -64,6 +69,34 @@ app.get('/useradvertinfo',cartHandle.getUserAds);
 app.post('/updateBday',validation.setbday);
 app.post('/updateContact',validation.setcont);
 app.post('/updateLocation',validation.setloc);
+
+
+var formdata={body:{username:"vivek",password:"thegreat"}}
+
+app.post('/sample', function(req, res) {
+  console.log("Inside sample post")
+  passport.authenticate('login', function(err, user, info) {
+    if(err) {
+      return next(err);
+    }
+
+    if(!user) {
+      return res.redirect('/');
+    }
+
+    // req.logIn(user, {session:false}, function(err) {
+    //   if(err) {
+    //     return next(err);
+    //   }
+    //
+    //   req.session.user = user.username;
+    //   console.log("session initilized")
+    //   return res.render('successLogin', {user:user});
+    // })
+
+  })(formdata);
+});
+
 
 mongo.connect(mongoSessionConnectURL, function(){
   console.log('Connected to mongo at: ' + mongoSessionConnectURL);

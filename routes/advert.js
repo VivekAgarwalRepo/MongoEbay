@@ -111,8 +111,6 @@ exports.add=function(req,res){
 
 exports.showNonBid=function (req,res) {
 
-
-
     if(req.session.username==undefined){
         res.send("invalid-session");
     }
@@ -159,60 +157,83 @@ var logger = new (winston.Logger)({
 // winston.add(winston.transports.File, { filename: 'BiddingActivity.log',level:'info',json:true });
 
 exports.addtobid=function (req,res) {
-    console.log("Placing Bid!");
+    if(req.session.username==undefined){
+        res.send("invalid-session");
+    }
+    else {
 
-    mongo.connect(mongoURL,function () {
-        auction = mongo.collection('auction');
-        adverts=mongo.collection('adverts');
+        var msg_payload = {"acc_id": req.session.acc_id,"item_id":req.param("item_id"),"highestamt":req.param("bidamt")}
 
-        auction.findOne({item_id:req.param("item_id")},function (err,result) {
-            adverts.findOne({item_id:req.param("item_id")},function (err,advertRes) {
-                console.log("auction highest price :"+result.highestamt)
-                console.log("auction due date :"+advertRes.dueDate)
-                if(result==undefined){
-                    if(advertRes.dueDate.getTime()<Date.now()){
-                        res.send("Bid time expired.");
-                    }
-                    else{
-                        auction.insert({item_id:req.param("item_id"),highestamt:req.param("bidamt")},function (err,succ) {
-                            if(!err)
-                            {
-                                console.log("Bid placed")
-                                res.send("success")
-
-                            }
-
-                            else{
-                                res.send("Failure in bidding")
-                            }
-                        })
-                    }
+        mq_client.make_request('bid_queue', msg_payload, function (err, results) {
+            console.log("Results recvd as :" + JSON.stringify(results));
+            if (err) {
+                throw err;
+            }
+            else {
+                if (results.code == 200) {
+                    res.send("success");
                 }
                 else{
-                    if(advertRes.dueDate.getTime()<Date.now()){
-                        res.send("Bid time expired.");
-                    }
-                    else
-                        if(result.highestamt>=req.param('bidamt')){
-                            res.send("Insufficient Bid amount for competition...");
-                        }
-                    else{
-                            auction.update({item_id:req.param("item_id")},{$set:{highestamt:req.param('bidamt')}},function (err,result) {
-                             if(result!=undefined && !err){
-                                    console.log("Bid amount reset!")
-                                    res.send("success")
-                                    }
-                                    else{
-                                 res.send("Failure in bidding")
-                             }
-                            });
-                        }
+                    res.send(results.value);
                 }
-            });
+            }
+        });
+    }
 
-        })
-
-    });
+    // console.log("Placing Bid!");
+    //
+    // mongo.connect(mongoURL,function () {
+    //     auction = mongo.collection('auction');
+    //     adverts=mongo.collection('adverts');
+    //
+    //     auction.findOne({item_id:req.param("item_id")},function (err,result) {
+    //         adverts.findOne({item_id:req.param("item_id")},function (err,advertRes) {
+    //             console.log("auction highest price :"+result.highestamt)
+    //             console.log("auction due date :"+advertRes.dueDate)
+    //             if(result==undefined){
+    //                 if(advertRes.dueDate.getTime()<Date.now()){
+    //                     res.send("Bid time expired.");
+    //                 }
+    //                 else{
+    //                     auction.insert({item_id:req.param("item_id"),highestamt:req.param("bidamt")},function (err,succ) {
+    //                         if(!err)
+    //                         {
+    //                             console.log("Bid placed")
+    //                             res.send("success")
+    //
+    //                         }
+    //
+    //                         else{
+    //                             res.send("Failure in bidding")
+    //                         }
+    //                     })
+    //                 }
+    //             }
+    //             else{
+    //                 if(advertRes.dueDate.getTime()<Date.now()){
+    //                     res.send("Bid time expired.");
+    //                 }
+    //                 else
+    //                     if(result.highestamt>=req.param('bidamt')){
+    //                         res.send("Insufficient Bid amount for competition...");
+    //                     }
+    //                 else{
+    //                         auction.update({item_id:req.param("item_id")},{$set:{highestamt:req.param('bidamt')}},function (err,result) {
+    //                          if(result!=undefined && !err){
+    //                                 console.log("Bid amount reset!")
+    //                                 res.send("success")
+    //                                 }
+    //                                 else{
+    //                              res.send("Failure in bidding")
+    //                          }
+    //                         });
+    //                     }
+    //             }
+    //         });
+    //
+    //     })
+    //
+    // });
 
 
     //
@@ -274,15 +295,35 @@ exports.showBid=function(req,res){
         res.send("invalid-session");
     }
     else{
+        var msg_payload={"acc_id":req.session.acc_id}
 
-        coll=mongo.collection('adverts');
-        coll.find({acc_id:{$ne:currID},bid:true},function (err,cursor) {
-            cursor.toArray(function(err, documents) {
-                console.log("Document Array Length :"+documents.length);
-                res.send(documents);
-            })
+        mq_client.make_request('displayBids_queue',msg_payload, function(err,results) {
+            console.log("Results recvd as :" + JSON.stringify(results));
+            if (err) {
+                throw err;
+            }
+            else {
+                if(results.code == 200){
+                    res.send(results.value);
+                }
+                else{
+                    res.send("Fetch Error");
+                }
+            }
 
         });
+
+        // coll=mongo.collection('adverts');
+        // coll.find({acc_id:{$ne:currID},bid:true},function (err,cursor) {
+        //     cursor.toArray(function(err, documents) {
+        //         console.log("Document Array Length :"+documents.length);
+        //         res.send(documents);
+        //     })
+        //
+        // });
+
+
+
                 // connection.query('select adverts.*,userinfo.fname,userinfo.lname from adverts,userinfo where bid=true and adverts.acc_id=userinfo.acc_id and adverts.acc_id!=?;',[req.session.acc_id],function(err, rows, fields){
                 //     if(!err){
                 //         if(rows!=undefined){

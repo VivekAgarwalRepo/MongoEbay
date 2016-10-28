@@ -81,7 +81,7 @@ exports.setloc=function (req,res) {
 	connect.returnConnection(connection);
 }
 
-exports.validate=function(req,res){
+exports.validate=function(req,res,next){
 	var user=req.param('username');
 	var pass=req.param('password');
 	var msg_payload={"username":user,"password":pass}
@@ -96,12 +96,12 @@ exports.validate=function(req,res){
 				console.log("valid Login");
 				req.session.username = user.toString();
 				req.session.password = pass;
-				req.session.acc_id = results.acc_id;
-				req.session.name = results.fname ;
+				req.session.acc_id = results.value.acc_id;
+				req.session.name = results.value.fname ;
 				res.send({
 					"result": "Ok",
-					"name": results.fname + " " + results.lname,
-					"acc_id": results.acc_id
+					"name": results.value.fname + " " + results.value.lname,
+					"acc_id": results.value.acc_id
 				});
 			}
 			else {
