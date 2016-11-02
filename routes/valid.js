@@ -7,17 +7,33 @@ var amqp = require('amqplib/callback_api');
 var mq_client = require('../rpc/client');
 
 exports.getTime=function (req,res) {
-
-	connection.query('select lastlogin from userinfo where acc_id = ?;',[req.session.acc_id], function(err, rows, fields) {
-		if (!err) {
-			console.log("Last Login :"+rows[0].lastSeen);
-			res.send(rows)
+	msg_payload={"acc_id":req.session.acc_id};
+	mq_client.make_request('lastlogin_queue',msg_payload, function(err,results) {
+		console.log("Results recvd as :" + JSON.stringify(results));
+		if (err) {
+			throw err;
 		}
-		else{
-			console.log("Last seen error :"+err)
+		else {
+			if(results.code==200){
+				// console.log("Retrieved last Login time as :"+new Date(results.value));
+				res.send({"lastlogin":new Date(results.value)});
+			}
+			else{
+				res.send(results.value);
+			}
 		}
 	});
-	connect.returnConnection(connection);
+    //
+	// connection.query('select lastlogin from userinfo where acc_id = ?;',[req.session.acc_id], function(err, rows, fields) {
+	// 	if (!err) {
+	// 		console.log("Last Login :"+rows[0].lastSeen);
+	// 		res.send(rows)
+	// 	}
+	// 	else{
+	// 		console.log("Last seen error :"+err)
+	// 	}
+	// });
+	// connect.returnConnection(connection);
 }
 
 exports.getBasicInfo=function (req,res) {
@@ -26,59 +42,123 @@ exports.getBasicInfo=function (req,res) {
 		res.send("invalid-session");
 	}
 	else{
-		connection.query('select fname,lname,acc_id,bday,contact,location from userinfo where acc_id=?;',[req.session.acc_id], function(err, rows, fields) {
-			if(!err){
-				res.send(rows);
+
+		msg_payload={"acc_id":req.session.acc_id};
+		mq_client.make_request('basicinfo_queue',msg_payload, function(err,results) {
+			console.log("Results for basic userinfo recvd as :" + JSON.stringify(results));
+			if (err) {
+				throw err;
 			}
-			else{
-				res.status(404);
+			else {
+				if(results.code==200){
+					// console.log("Retrieved last Login time as :"+new Date(results.value));
+					res.send(results.value);
+				}
+				else{
+					res.send("Failed Request");
+				}
 			}
 		});
+
+
+		// connection.query('select fname,lname,acc_id,bday,contact,location from userinfo where acc_id=?;',[req.session.acc_id], function(err, rows, fields) {
+		// 	if(!err){
+		// 		res.send(rows);
+		// 	}
+		// 	else{
+		// 		res.status(404);
+		// 	}
+		// });
 	}
 	connect.returnConnection(connection);
 }
 
 exports.setbday=function (req,res) {
-
-	connection.query('update userinfo set bday=? where acc_id=?;',[req.param("birthday"),req.session.acc_id], function(err, rows, fields) {
-		if (!err) {
-			console.log("Updated user bday!");
-		}
-		else{
-			console.log(err);
-		}
-	})
-	res.send("ok");
-	connect.returnConnection(connection);
+	if(req.session.username==undefined){
+		res.send("invalid-session");
+	}
+	else {
+		msg_payload = {"acc_id": req.session.acc_id,"bday":req.param("birthday")};
+		mq_client.make_request('setbday_queue', msg_payload, function (err, results) {
+			console.log("Results recvd for Bday as :" + JSON.stringify(results));
+			if (err) {
+				throw err;
+			}
+			else {
+				res.send("ok");
+			}
+		});
+	}
+	// connection.query('update userinfo set bday=? where acc_id=?;',[req.param("birthday"),req.session.acc_id], function(err, rows, fields) {
+	// 	if (!err) {
+	// 		console.log("Updated user bday!");
+	// 	}
+	// 	else{
+	// 		console.log(err);
+	// 	}
+	// })
+	// res.send("ok");
+	// connect.returnConnection(connection);
 }
 
 exports.setcont=function (req,res) {
 
-	connection.query('update userinfo set contact=? where acc_id=?;',[req.param("contact"),req.session.acc_id], function(err, rows, fields) {
-		if (!err) {
-			console.log("Updated user bday!");
-		}
-		else{
-			console.log(err);
-		}
-	})
-	res.send("ok");
-	connect.returnConnection(connection);
+	if(req.session.username==undefined){
+		res.send("invalid-session");
+	}
+	else {
+		msg_payload = {"acc_id": req.session.acc_id,"contact":req.param("contact")};
+		mq_client.make_request('setcont_queue', msg_payload, function (err, results) {
+			console.log("Results recvd for contacts as :" + JSON.stringify(results));
+			if (err) {
+				throw err;
+			}
+			else {
+				res.send("ok");
+			}
+		});
+	}
+
+	// connection.query('update userinfo set contact=? where acc_id=?;',[req.param("contact"),req.session.acc_id], function(err, rows, fields) {
+	// 	if (!err) {
+	// 		console.log("Updated user bday!");
+	// 	}
+	// 	else{
+	// 		console.log(err);
+	// 	}
+	// })
+	// res.send("ok");
+	// connect.returnConnection(connection);
 
 }
 
 exports.setloc=function (req,res) {
+	if(req.session.username==undefined){
+		res.send("invalid-session");
+	}
+	else {
+		msg_payload = {"acc_id": req.session.acc_id,"location":req.param("location")};
+		mq_client.make_request('setloc_queue', msg_payload, function (err, results) {
+			console.log("Results recvd for location as :" + JSON.stringify(results));
+			if (err) {
+				throw err;
+			}
+			else {
+				res.send("ok");
+			}
+		});
+	}
 
-	connection.query('update userinfo set location=? where acc_id=?;',[req.param("location"),req.session.acc_id], function(err, rows, fields) {
-		if (!err) {
-			console.log("Updated user location!");
-		}
-		else{
-			console.log(err);
-		}
-	})
-	res.send("ok");
-	connect.returnConnection(connection);
+	// connection.query('update userinfo set location=? where acc_id=?;',[req.param("location"),req.session.acc_id], function(err, rows, fields) {
+	// 	if (!err) {
+	// 		console.log("Updated user location!");
+	// 	}
+	// 	else{
+	// 		console.log(err);
+	// 	}
+	// })
+	// res.send("ok");
+	// connect.returnConnection(connection);
 }
 
 exports.validate=function(req,res,next){

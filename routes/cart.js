@@ -363,36 +363,45 @@ exports.displayCart=function(req,res){
 }
 
 exports.getUserAds=function (req,res) {
-    if(req.session.username) //check whether session is valid
+    if (req.session.username) //check whether session is valid
     {
-        connection.query('select * from adverts where acc_id=?;', [req.session.acc_id], function (err, rows, fields) {
-            if (!err) {
-                res.send(rows);
+        mq_client.make_request('getAdverts_queue', msg_payload, function (err, results) {
+            console.log("Results for placed ads recvd as :" + JSON.stringify(results));
+            if (err) {
+                throw err;
             }
             else {
-                res.send("failed");
+                if (results.code == 200) {
+                    res.send(results.value);
+                }
+                else {
+                    res.status(401);
+                }
             }
         });
-    }
 
-    else{
-        res.send("invalid-session");
     }
-
 }
 exports.getHistory=function (req,res) {
+    var msg_payload={"acc_id":req.session.acc_id};
     if(req.session.username) //check whether session is valid
     {
-        connection.query('select * from history where acc_id=?;', [req.session.acc_id], function (err, rows, fields) {
-            if (!err) {
-                res.send(rows);
+        mq_client.make_request('getHistory_queue',msg_payload, function(err,results){
+            console.log("Results recvd as :"+JSON.stringify(results));
+            if(err){
+                throw err;
             }
             else {
-                res.send("failed");
+                if (results.code == 200) {
+                    res.send(results.value);
+                }
+                else{
+                    res.status(401);
+                }
             }
         });
-        connect.returnConnection(connection);
     }
+
     else{
         res.send("invalid-session");
     }

@@ -91,7 +91,6 @@ AddHandle.controller('useradvertController',function ($scope,$http) {
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
         }
-
         else
         {
             $scope.ads=data;
@@ -138,7 +137,7 @@ AddHandle.controller('orderHistoryController',function ($scope,$http) {
         else
         {
             $scope.histories=data;
-            $scope.purchase=data[0].orderdate
+            $scope.purchase=data[0].orderDate
         }
 
 
@@ -150,21 +149,21 @@ AddHandle.controller('aboutUser',function ($scope,$http) {
         method : "POST",
         url : "/basicInfo"
     }).success(function (data) {
-        $scope.name = data[0].fname + " " + data[0].lname;
-        var id = data[0].acc_id.toString().substr(5, 8);
-        $scope.handle = data[0].fname.toLowerCase() + "_" + id;
+        $scope.name = data.fname + " " + data.lname;
+        var id = data.acc_id.toString().substr(5, 8);
+        $scope.handle = data.fname.toLowerCase() + "_" + id;
 
-        if (data[0].bday != null) {
+        if (data.bday != null) {
             $scope.hbday = true;
-            $scope.bday = data[0].bday;
+            $scope.bday = data.bday;
         }
-        if (data[0].contact != null) {
+        if (data.contact != null) {
             $scope.cont = true;
-            $scope.contac = data[0].contact;
+            $scope.contac = data.contact;
         }
-        if (data[0].location != null) {
+        if (data.location != null) {
             $scope.hloc = true;
-            $scope.locat = data[0].location;
+            $scope.locat = data.location;
         }
     });
     $scope.setBday=function () {
@@ -306,7 +305,7 @@ AddHandle.controller('dateController',function ($scope,$http) {
         method:"get",
         url:"/getTime",
     }).success(function(data){
-        $scope.lastseen=new Date(data[0].lastlogin);
+        $scope.lastseen=new Date(data.lastlogin);
     })
 
 });
@@ -452,7 +451,7 @@ AddHandle.controller('advertisement',function($scope,$http){
             }
             else{
                 if(data.result=="success")
-                    alert("data successfully saved by server !"+data);
+                    alert("Your advert has been succesfully placed!");
                 else
                     alert("Ad failed due to :"+data.result);
                 window.location.reload();
