@@ -11,10 +11,6 @@ var express = require('express')
     , cartHandle=require('./routes/cart')
     ,payment = require('./routes/cardValidation');
 
-var passport = require('passport');
-require('./routes/passport')(passport);
-
-
 var mongoSessionConnectURL="mongodb://localhost:27017/EbayDB";
 var session=require("express-session");
 var mongoStore = require("connect-mongo")(session);
@@ -32,7 +28,6 @@ app.set('view engine', 'ejs');
 app.use(express.cookieParser());
 app.use(session({resave:true , saveUninitialized:true, cookieName: 'ebay-session',    secret: 'ebaysession',duration: 30 * 60 * 1000,    activeDuration: 5 * 60 * 1000,}));
 
-app.use(passport.initialize());
 
 app.use(express.favicon());
 app.use(express.logger('dev'));

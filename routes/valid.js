@@ -11,7 +11,7 @@ exports.getTime=function (req,res) {
 	mq_client.make_request('lastlogin_queue',msg_payload, function(err,results) {
 		console.log("Results recvd as :" + JSON.stringify(results));
 		if (err) {
-			throw err;
+			res.send("timeout");
 		}
 		else {
 			if(results.code==200){
@@ -47,7 +47,7 @@ exports.getBasicInfo=function (req,res) {
 		mq_client.make_request('basicinfo_queue',msg_payload, function(err,results) {
 			console.log("Results for basic userinfo recvd as :" + JSON.stringify(results));
 			if (err) {
-				throw err;
+				res.send("timeout");
 			}
 			else {
 				if(results.code==200){
@@ -70,7 +70,6 @@ exports.getBasicInfo=function (req,res) {
 		// 	}
 		// });
 	}
-	connect.returnConnection(connection);
 }
 
 exports.setbday=function (req,res) {
@@ -82,8 +81,7 @@ exports.setbday=function (req,res) {
 		mq_client.make_request('setbday_queue', msg_payload, function (err, results) {
 			console.log("Results recvd for Bday as :" + JSON.stringify(results));
 			if (err) {
-				throw err;
-			}
+				res.send("timeout");			}
 			else {
 				res.send("ok");
 			}
@@ -111,8 +109,7 @@ exports.setcont=function (req,res) {
 		mq_client.make_request('setcont_queue', msg_payload, function (err, results) {
 			console.log("Results recvd for contacts as :" + JSON.stringify(results));
 			if (err) {
-				throw err;
-			}
+				res.send("timeout");			}
 			else {
 				res.send("ok");
 			}
@@ -141,8 +138,7 @@ exports.setloc=function (req,res) {
 		mq_client.make_request('setloc_queue', msg_payload, function (err, results) {
 			console.log("Results recvd for location as :" + JSON.stringify(results));
 			if (err) {
-				throw err;
-			}
+				res.send("timeout");			}
 			else {
 				res.send("ok");
 			}
@@ -169,7 +165,7 @@ exports.validate=function(req,res,next){
 	mq_client.make_request('login_queue',msg_payload, function(err,results){
 		console.log("Results recvd as :"+JSON.stringify(results));
 		if(err){
-			throw err;
+			res.send("timeout");
 		}
 		else{
 			if(results.code == 200){
@@ -293,7 +289,6 @@ exports.validate=function(req,res,next){
 	// 	  else
 	// 	    console.log('Error while performing lookup Query:'+err);
 	// 	});
-	connect.returnConnection(connection);
 
 };
 

@@ -91,6 +91,12 @@ AddHandle.controller('useradvertController',function ($scope,$http) {
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
         }
+        if(data=="failed"){
+            alert("Unable to fetch adverts...please come back later!")
+        }
+        if(data=="timeout"){
+            console.log('Timeout occured');
+        }
         else
         {
             $scope.ads=data;
@@ -111,6 +117,12 @@ AddHandle.controller('logoutController',function ($scope,$http,$cookieStore) {
         if(data=="invalid-session"){
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
+        }
+        if(data=="failed"){
+            alert("Unable to perform this operation...please come back later!")
+        }
+        if(data=="timeout"){
+            console.log('Timeout occured');
         }
 
         else
@@ -133,11 +145,16 @@ AddHandle.controller('orderHistoryController',function ($scope,$http) {
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
         }
+        if(data=="failed"){
+            alert("Unable to perform this operation...please come back later!")
+        }
+        if(data=="timeout"){
+            console.log('Timeout occured');
+        }
 
         else
         {
             $scope.histories=data;
-            $scope.purchase=data[0].orderDate
         }
 
 
@@ -213,7 +230,12 @@ AddHandle.controller('displayBidsController',function ($scope,$http) {
             alert("Your session has expired! Please login again.");
             window.location.assign("/login");
         }
-
+        if(data=="failed"){
+            alert("Unable to perform this operation...please come back later!")
+        }
+        if(data=="timeout"){
+            console.log('Timeout occured');
+        }
         else
             $scope.auctions=data;
 
@@ -237,7 +259,12 @@ AddHandle.controller('displayBidsController',function ($scope,$http) {
                 alert("Your session has expired! Please login again.");
                 window.location.assign("/login");
             }
-
+            if(data=="failed"){
+                alert("Unable to perform this operation...please come back later!")
+            }
+            if(data=="timeout"){
+                console.log('Timeout occured');
+            }
             else
                 alert(data);
 
@@ -265,8 +292,14 @@ AddHandle.controller('payment',function ($scope,$http) {
             url:"/pay",
 
         }).success(function (data) {
-
+            if(data=="success");
             alert(data);
+            if(data=="failed"){
+                alert("Unable to perform this operation...please come back later!")
+            }
+            if(data=="timeout"){
+                console.log('Timeout occured');
+            }
         });
     }
 
@@ -285,6 +318,12 @@ AddHandle.controller('displayAdsController',function($scope,$http){
         alert("Your session has expired! Please login again.");
         window.location.assign("/login");
     }
+        if(data=="failed"){
+            alert("Unable to perform this operation...please come back later!")
+        }
+        if(data=="timeout"){
+            console.log('Timeout occured');
+        }
 
     else
     {
@@ -350,6 +389,12 @@ AddHandle.controller('displayCartController',function ($scope,$http) {
             window.location.assign("/login");
         }
         else{
+            if(data=="failed"){
+                alert("Unable to perform this operation...please come back later!")
+            }
+            if(data=="timeout"){
+                console.log('Timeout occured');
+            }
            if(data=="success"){
                alert("You have won a bid! Refresh your cart to check your item!")
            }
@@ -407,6 +452,12 @@ AddHandle.controller('addToCartController',function($scope,$http){
                     alert("Your session has expired! Please login again.");
                     window.location.assign("/login");
                 }
+                if(data=="failed"){
+                    alert("Unable to perform this operation...please come back later!")
+                }
+                if(data=="timeout"){
+                    console.log('Timeout occured');
+                }
                 else {
                     alert("Added To Cart!");
                 }
@@ -452,8 +503,13 @@ AddHandle.controller('advertisement',function($scope,$http){
             else{
                 if(data.result=="success")
                     alert("Your advert has been succesfully placed!");
-                else
-                    alert("Ad failed due to :"+data.result);
+                if(data=="failed"){
+                    alert("Unable to perform this operation...please come back later!")
+                }
+                if(data=="timeout"){
+                    console.log('Timeout occured');
+                }
+
                 window.location.reload();
             }
 

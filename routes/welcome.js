@@ -1,6 +1,6 @@
-connect=require('./mysqlconnect');
+var mq_client = require('../rpc/client');
+var amqp = require('amqplib/callback_api');
 
-connection = connect.getconnection();
 var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/EbayDB";
 // console.log("Connection received as :"+connection);
@@ -19,49 +19,70 @@ exports.addUser=function(req,res){
 	var lname=req.param("lastName");
 	var pass=sjcl.encrypt("newpass",req.param("npassword"));
 
-	mongo.connect(mongoURL,function () {
-		coll=mongo.collection('userinfo');
-
-		coll.findOne({},{limit:1,sort:{"acc_id":-1}},function (err,docs) {
-
-			if(!err){
-				if(docs!=undefined){
-
-					console.log("Got as : "+docs.acc_id);
-					var acc_id=docs.acc_id;
-					acc_id=acc_id+1;
-
-					coll.findOne({email:user},function (err,result) {
-						if(!err){
-							if(result==undefined){
-								coll.insert({acc_id:acc_id,fname:fname,lname:lname,email:user,password:pass},function (err,result) {
-									if(!err){
-										res.send({"result":"success"});
-									}
-									else{
-										res.send({"result":"Oops! Please try again later"});
-									}
-								});
-							}
-							else{
-								res.send({"result":"present"})
-							}
-						}
-						else{
-							res.send({"result":"Oops! Please try again later"})
-						}
-					})
-
-				}
-				else{
-					console.log("The document is not found!");
-				}
+	msg_payload={"fname":fname,"lname":lname,"email":user,"pass":pass,"user":user};
+	mq_client.make_request('registration_queue',msg_payload, function(err,results) {
+		console.log("Results for registration recvd as :" + JSON.stringify(results));
+		if (err) {
+			res.send("timeout");
+		}
+		else {
+			if(results.code==200){
+				// console.log("Retrieved last Login time as :"+new Date(results.value));
+				res.send({"result":"success"});
 			}
+			else
+				if(results.code=403){
+					res.send({"result":"present"});
+				}
 			else{
-				console.log("Error encountered in query :"+err);
+				res.send("failed");
 			}
-		});
-	})
+		}
+	});
+
+	// mongo.connect(mongoURL,function () {
+	// 	coll=mongo.collection('userinfo');
+    //
+	// 	coll.findOne({},{limit:1,sort:{"acc_id":-1}},function (err,docs) {
+    //
+	// 		if(!err){
+	// 			if(docs!=undefined){
+    //
+	// 				console.log("Got as : "+docs.acc_id);
+	// 				var acc_id=docs.acc_id;
+	// 				acc_id=acc_id+1;
+    //
+	// 				coll.findOne({email:user},function (err,result) {
+	// 					if(!err){
+	// 						if(result==undefined){
+	// 							coll.insert({acc_id:acc_id,fname:fname,lname:lname,email:user,password:pass},function (err,result) {
+	// 								if(!err){
+	// 									res.send({"result":"success"});
+	// 								}
+	// 								else{
+	// 									res.send({"result":"Oops! Please try again later"});
+	// 								}
+	// 							});
+	// 						}
+	// 						else{
+	// 							res.send({"result":"present"})
+	// 						}
+	// 					}
+	// 					else{
+	// 						res.send({"result":"Oops! Please try again later"})
+	// 					}
+	// 				})
+    //
+	// 			}
+	// 			else{
+	// 				console.log("The document is not found!");
+	// 			}
+	// 		}
+	// 		else{
+	// 			console.log("Error encountered in query :"+err);
+	// 		}
+	// 	});
+	// })
 
 
 

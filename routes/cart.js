@@ -1,5 +1,3 @@
-connect=require('./mysqlconnect');
-connection = connect.getconnection();
 var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/EbayDB";
 var waterfall = require('async-waterfall');
@@ -21,7 +19,7 @@ exports.addtocart=function(req,res){
         mq_client.make_request('add_to_cart_queue',msg_payload, function(err,results) {
             console.log("Results recvd as :" + JSON.stringify(results));
             if (err) {
-                throw err;
+                res.send("timeout");
             }
             else {
 
@@ -32,7 +30,7 @@ exports.addtocart=function(req,res){
 
                 else{
                     console.log("Error encountered in addition to cart as :"+err);
-                    res.send("Failure");
+                    res.send("failed");
                 }
 
             }
@@ -84,7 +82,6 @@ exports.addtocart=function(req,res){
     else{
         res.send("invalid-session");
     }
-    connect.returnConnection(connection);
 };
 
 exports.removeItem=function (req,res) {
@@ -104,7 +101,7 @@ exports.removeItem=function (req,res) {
                     res.send("Success");
                 }
                 else{
-                    res.send("404");
+                    res.send("failed");
                 }
             }
         });
@@ -151,7 +148,6 @@ exports.removeItem=function (req,res) {
     //         res.status(404);
     //     }
     // })
-    connect.returnConnection(connection);
 
 }
 
@@ -165,14 +161,13 @@ exports.checkBid=function (req,res) {
         mq_client.make_request('checkBid_queue',msg_payload, function(err,results){
             console.log("Results recvd as :"+JSON.stringify(results));
             if(err){
-                throw err;
-            }
+                res.send("timeout");            }
             else{
                 if(results.code == 200){
                     res.send("success");
                 }
                 else{
-                res.send("failure");
+                res.send("Bids Not Found");
                 }
             }
         });
@@ -304,7 +299,7 @@ exports.displayCart=function(req,res){
         mq_client.make_request('display_cart_queue',msg_payload, function(err,results){
             console.log("Results recvd as :"+JSON.stringify(results));
             if(err){
-                throw err;
+                res.send("timeout");
             }
             else {
                 if (results.code == 200) {
@@ -358,7 +353,6 @@ exports.displayCart=function(req,res){
     else{
         res.send("invalid-session");
     }
-    connect.returnConnection(connection);
 
 }
 
@@ -368,14 +362,14 @@ exports.getUserAds=function (req,res) {
         mq_client.make_request('getAdverts_queue', msg_payload, function (err, results) {
             console.log("Results for placed ads recvd as :" + JSON.stringify(results));
             if (err) {
-                throw err;
+                res.send("timeout");
             }
             else {
                 if (results.code == 200) {
                     res.send(results.value);
                 }
                 else {
-                    res.status(401);
+                    res.send("failed");
                 }
             }
         });
@@ -389,14 +383,14 @@ exports.getHistory=function (req,res) {
         mq_client.make_request('getHistory_queue',msg_payload, function(err,results){
             console.log("Results recvd as :"+JSON.stringify(results));
             if(err){
-                throw err;
+                res.send("timeout");
             }
             else {
                 if (results.code == 200) {
                     res.send(results.value);
                 }
                 else{
-                    res.status(401);
+                    res.send("failed");
                 }
             }
         });

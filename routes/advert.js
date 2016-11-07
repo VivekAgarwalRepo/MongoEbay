@@ -1,6 +1,4 @@
-connect=require('./mysqlconnect');
 
-connection = connect.getconnection();
 var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/EbayDB";
 var mq_client = require('../rpc/client');
@@ -106,7 +104,6 @@ exports.add=function(req,res){
         //
 
     }
-    connect.returnConnection(connection);
 };
 
 exports.showNonBid=function (req,res) {
@@ -142,7 +139,6 @@ exports.showNonBid=function (req,res) {
         // });
 
     }
-    connect.returnConnection(connection);
 };
 
 var winston = require('winston');
@@ -167,14 +163,15 @@ exports.addtobid=function (req,res) {
         mq_client.make_request('bid_queue', msg_payload, function (err, results) {
             console.log("Results recvd as :" + JSON.stringify(results));
             if (err) {
-                throw err;
+                console.log("Timeout occured in placing bid");
+                res.send("timeout");
             }
             else {
                 if (results.code == 200) {
                     res.send("success");
                 }
                 else{
-                    res.send(results.value);
+                    res.send("failed");
                 }
             }
         });
@@ -298,16 +295,17 @@ exports.showBid=function(req,res){
         var msg_payload={"acc_id":req.session.acc_id}
 
         mq_client.make_request('displayBids_queue',msg_payload, function(err,results) {
-            console.log("Results recvd as :" + JSON.stringify(results));
-            if (err) {
-                throw err;
+            // console.log("Results recvd as :" + JSON.stringify(results));
+            if (err || results=="timeout") {
+                console.log(results);
+                res.send("timeout");
             }
             else {
                 if(results.code == 200){
                     res.send(results.value);
                 }
                 else{
-                    res.send("Fetch Error");
+                    res.send("failed");
                 }
             }
 
@@ -342,6 +340,5 @@ exports.showBid=function(req,res){
                 // })
 
     }
-    connect.returnConnection(connection);
 }
 
