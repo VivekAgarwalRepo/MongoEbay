@@ -9,6 +9,7 @@
 <p> The middleware is built using RabbitMQ messaging service to ensure that no requests are lost and proper subscription and publishing queues are maintained, from where requests are assigned to servers</p>
 
 <p> The front end of this application is built using MVC architecture and coded using Angular Javacript, HTML5, CSS3 and bootstrap</p>
+<p> The testing was performed using Jmeter to support 100000 concurrent users, Chai and Mocha</p>
 
 <p> This project is built for acamedic purposes and should not be used in any commercial way </p>
 <h2>Usage</h2>
@@ -36,6 +37,9 @@ Simply login and you would then see your dashboard. Here, you can place an adver
 5. CSS<br>
 6. MongoDB<br>
 7. RabbitMQ<br>
+8. Chai<br>
+9. Mocha<br>
+10. JMeter<br>
 
 Created with [Nodeclipse](https://github.com/Nodeclipse/nodeclipse-1)
  ([Eclipse Marketplace](http://marketplace.eclipse.org/content/nodeclipse), [site](http://www.nodeclipse.org))   
