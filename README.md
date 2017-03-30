@@ -13,9 +13,11 @@
 <p> This project is built for acamedic purposes and should not be used in any commercial way </p>
 <h2>Usage</h2>
 <h3>Installation</h3><br>
+<p>
 Please install the following before running this application
-1. Express-Node environment
-2. RabbitMQ server
+</p><br>
+1. Express-Node environment<br>
+2. RabbitMQ server<br>
 <br>
 Run npm-install on the package.json to install the dependancies. The rest has been taken care of by the use of CDNs.
 <br>
