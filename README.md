@@ -16,7 +16,7 @@
 <h3>Installation</h3><br>
 <p>
 Please install the following before running this application
-</p><br>
+</p>
 1. Express-Node environment<br>
 2. RabbitMQ server<br>
 <br>
