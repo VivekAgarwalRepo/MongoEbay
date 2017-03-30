@@ -12,28 +12,28 @@
 
 <p> This project is built for acamedic purposes and should not be used in any commercial way </p>
 <h2>Usage</h2>
-<h3>Installation</h3>
+<h3>Installation</h3><br>
 Please install the following before running this application
 1. Express-Node environment
 2. RabbitMQ server
-
+<br>
 Run npm-install on the package.json to install the dependancies. The rest has been taken care of by the use of CDNs.
-
+<br>
 Run the server on localhost/login:3000 to land on the login page. Make sure to register your account in this application before usage.
-
+<br><br>
 Simply login and you would then see your dashboard. Here, you can place an advert, add existing products to your online cart, and bid on your favourite item (if you are the highest bidder, it gets auto-added to your cart after four days!).
+<br><br>
+<b>Happy Shopping!</b>
 
-Happy Shopping!
 
-
-<h2> Development </h2>
-1. Node Javascript
-2. Angular Javascript
-3. Bootstrap
-4. HTML5
-5. CSS
-6. MongoDB
-7. RabbitMQ
+<h2> Development </h2><br>
+1. Node Javascript<br>
+2. Angular Javascript<br>
+3. Bootstrap<br>
+4. HTML5<br>
+5. CSS<br>
+6. MongoDB<br>
+7. RabbitMQ<br>
 
 Created with [Nodeclipse](https://github.com/Nodeclipse/nodeclipse-1)
  ([Eclipse Marketplace](http://marketplace.eclipse.org/content/nodeclipse), [site](http://www.nodeclipse.org))   
