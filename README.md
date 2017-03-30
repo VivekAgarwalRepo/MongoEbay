@@ -2,7 +2,7 @@
 
 <h1>MongoEbay</h1>
 
-<p>This project is an adaptation of a three-tier E-Commerce architecture such as 'Ebay'. It makes use of MEAN stack web-development to enhance request handling performance and makes use of messaging service such as RabbitMQ.</p>
+<p>This project is an adaptation of a three-tier E-Commerce architecture such as 'Ebay' using open-source technologies. It makes use of MEAN stack web-development to enhance request handling performance and makes use of messaging service such as RabbitMQ.</p>
 
 <p> This is a completely RESTful API based application and makes use of HTTP protocol.The back-end of this application is built using Node Javascript. The database used is No-SQL which helps in storing product metadata and improving scalability of the architecture.</p>
 
