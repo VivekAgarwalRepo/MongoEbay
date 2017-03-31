@@ -41,6 +41,7 @@ Simply login and you would then see your dashboard. Here, you can place an adver
 7. RabbitMQ<br>
 8. Mocha<br>
 9. JMeter<br>
+10. PassportJS<br>
 
 Created with [Nodeclipse](https://github.com/Nodeclipse/nodeclipse-1)
  ([Eclipse Marketplace](http://marketplace.eclipse.org/content/nodeclipse), [site](http://www.nodeclipse.org))   
