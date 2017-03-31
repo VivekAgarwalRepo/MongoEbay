@@ -19,6 +19,8 @@ Please install the following before running this application
 </p>
 1. Express-Node environment<br>
 2. RabbitMQ server<br>
+3. MongoDB server<br>
+
 <br>
 Run npm-install on the package.json to install the dependancies. The rest has been taken care of by the use of CDNs.
 <br>
